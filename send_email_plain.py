@@ -1,17 +1,11 @@
-# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-# SPDX-License-Identifier: Apache-2.0
-
-"""
-Purpose
-
-Shows how to send email by using an Amazon Pinpoint SMTP server.
-"""
-
-
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import logging
 import smtplib
+from flask import Flask,jsonify,request
+
+app = Flask(__name__)
+
 
 logger = logging.getLogger(__name__)
 # Replace smtp_username and smtp_password with your Amazon Pinpoint SMTP user name
@@ -85,6 +79,13 @@ def send_sample_email():
     
 
     print("Sending email through SMTP server.")
+    send_email(sender=sender,to_address=to_address,subject=subject,text_message=text_message,html_message=html_message)
+
+
+def send_email(sender,to_address,subject,text_message,html_message=''):
+    # If you're using Amazon Pinpoint in an AWS Region other than US West (Oregon),
+    # replace email-smtp.us-west-2.amazonaws.com with the Amazon Pinpoint SMTP
+    # endpoint in the appropriate AWS Region.
     try:
         with smtplib.SMTP(HOST, PORT) as smtp_server:
             send_smtp_message(
@@ -97,5 +98,15 @@ def send_sample_email():
         print("Email sent!")
 
 
+@app.route('/shira/send_email',methods=['POST'])
+def send_email_endpoint():
+    sender = request.get_json(force = True)['sender']
+    to_address = request.get_json(force = True)['to_address']
+    subject = request.get_json(force = True)['subject']
+    text_message = request.get_json(force = True)['text_message']
+    send_email(sender=sender,to_address=to_address,subject=subject,text_message=text_message)
+    return jsonify({'status':'sent email'})
+
+
 if __name__ == '__main__':
-    send_sample_email()
+   app.run(threaded=False,port=20000,host="0.0.0.0",debug=True)
