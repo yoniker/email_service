@@ -14,10 +14,15 @@ import logging
 import smtplib
 
 logger = logging.getLogger(__name__)
-
+# Replace smtp_username and smtp_password with your Amazon Pinpoint SMTP user name
+    # and password.
+SMTP_USERNAME = "AKIAVIASWTZFL52HQPWE"
+SMTP_PASSWORD = "BBKW/w6q+hNFUsvz9TF8mi1dbzXJs8T3iaD+LmK2rwH8"
+HOST = "email-smtp.us-east-1.amazonaws.com"
+PORT = 587
 
 def send_smtp_message(
-        smtp_server, smtp_username, smtp_password, sender, to_address, cc_address,
+        smtp_server, sender, to_address, cc_address,
         subject, html_message, text_message):
     """
     Sends an email by using an Amazon Pinpoint SMTP server.
@@ -47,18 +52,16 @@ def send_smtp_message(
     smtp_server.starttls()
     # smtplib docs recommend calling ehlo() before and after starttls()
     smtp_server.ehlo()
-    smtp_server.login(smtp_username, smtp_password)
+    smtp_server.login(SMTP_USERNAME, SMTP_PASSWORD)
     # Uncomment the next line to send SMTP server responses to stdout.
     # smtp_server.set_debuglevel(1)
     smtp_server.sendmail(sender, to_address, msg.as_string())
 
 
-def main():
+def send_sample_email():
     # If you're using Amazon Pinpoint in an AWS Region other than US West (Oregon),
     # replace email-smtp.us-west-2.amazonaws.com with the Amazon Pinpoint SMTP
     # endpoint in the appropriate AWS Region.
-    host = "email-smtp.us-east-1.amazonaws.com"
-    port = 587
     sender = 'yoni.keren@gmail.com'
     to_address = 'yoni.keren@gmail.com'
     #cc_address = "cc_recipient@example.com"
@@ -79,16 +82,13 @@ def main():
     </html>
                 """
 
-    # Replace smtp_username and smtp_password with your Amazon Pinpoint SMTP user name
-    # and password.
-    smtp_username = "AKIAVIASWTZFL52HQPWE"
-    smtp_password = "BBKW/w6q+hNFUsvz9TF8mi1dbzXJs8T3iaD+LmK2rwH8"
+    
 
     print("Sending email through SMTP server.")
     try:
-        with smtplib.SMTP(host, port) as smtp_server:
+        with smtplib.SMTP(HOST, PORT) as smtp_server:
             send_smtp_message(
-                smtp_server, smtp_username, smtp_password, sender, to_address,
+                smtp_server, sender, to_address,
                 '', subject, html_message, text_message)
     except Exception:
         logger.exception("Couldn't send message.")
@@ -98,4 +98,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    send_sample_email()
