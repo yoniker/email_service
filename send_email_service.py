@@ -107,6 +107,9 @@ def send_email_endpoint():
     send_email(sender=sender,to_address=to_address,subject=subject,text_message=text_message)
     return jsonify({'status':'sent email'})
 
+@app.route('/shira/healthcheck')
+def say_healthy():
+    return jsonify({'status':'email service is up and running'})
 
 if __name__ == '__main__':
    app.run(threaded=False,port=20000,host="0.0.0.0",debug=True)
